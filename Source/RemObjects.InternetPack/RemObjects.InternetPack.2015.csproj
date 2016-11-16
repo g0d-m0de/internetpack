@@ -37,7 +37,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG;FULLFRAMEWORK;REMOBJECTS_SIGN_ASSEMBLY;DESIGN</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FULLFRAMEWORK;DESIGN</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +58,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;FULLFRAMEWORK;REMOBJECTS_SIGN_ASSEMBLY;DESIGN</DefineConstants>
+    <DefineConstants>DEBUG;FULLFRAMEWORK;DESIGN</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
