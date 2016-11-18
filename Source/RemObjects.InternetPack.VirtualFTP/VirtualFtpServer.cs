@@ -61,9 +61,15 @@ namespace RemObjects.InternetPack.Ftp.VirtualFtp
 		{
 			VirtualFtpSession lSession = (VirtualFtpSession)e.Session;
 
-			lSession.CurrentFolder.ListFolderItems(e.Listing);
+      IFtpFolder lSubdir = null;
+		  if (!String.IsNullOrEmpty(e.Path))
+        lSubdir = RootFolder.DigForSubFolder(e.Path, (VirtualFtpSession)e.Session);
+      if (lSubdir == null)
+		    lSubdir = lSession.CurrentFolder;
 
-			base.InvokeOnGetListing(e);
+      lSubdir.ListFolderItems(e.Listing);
+
+      base.InvokeOnGetListing(e);
 		}
 
 		protected override void InvokeOnChangeDirectory(FtpChangeDirectoryArgs e)

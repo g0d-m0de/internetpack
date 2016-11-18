@@ -73,10 +73,11 @@ namespace RemObjects.InternetPack.Ftp
 
 	public class FtpGetListingArgs : SessionEventArgs
 	{
-		public FtpGetListingArgs(Object session, Connection connection, Server server)
+    public FtpGetListingArgs(Object session, Connection connection, Server server, string path)
 			: base(session, connection, server)
 		{
 			this.fListing = new FtpListing();
+      this.path = path;
 		}
 
 		public FtpListing Listing
@@ -87,6 +88,15 @@ namespace RemObjects.InternetPack.Ftp
 			}
 		}
 		private readonly FtpListing fListing;
+
+	  public string Path
+	  {
+	    get
+	    {
+	      return path;
+	    }
+	  }
+	  private readonly string path;
 	}
 
 	public class FtpFileEventArgs : SessionEventArgs
@@ -1005,36 +1015,46 @@ namespace RemObjects.InternetPack.Ftp
 				}
 				else
 				{
-					FtpGetListingArgs lListingArgs = new FtpGetListingArgs(e.Session, e.Connection, e.Server);
-					if (!lSession.Passive)
-						e.Connection.WriteLine("150 Opening data connection");
-					try
-					{
-						((FtpServer)e.Server).InvokeOnGetListing(lListingArgs);
-					}
-					catch (FtpException ex)
-					{
-						e.Connection.WriteLine(ex.ToString());
-						return;
-					}
+				  if (e.Parameters.Length <= 1)
+				  {
+				    string lPath = "";
+				    if (e.Parameters != null && e.Parameters.Length == 1)
+				      lPath = e.Parameters[0];
+            FtpGetListingArgs lListingArgs = new FtpGetListingArgs(e.Session, e.Connection, e.Server, lPath);
+            if (!lSession.Passive)
+              e.Connection.WriteLine("150 Opening data connection");
+            try
+            {
+              ((FtpServer)e.Server).InvokeOnGetListing(lListingArgs);
+            }
+            catch (FtpException ex)
+            {
+              e.Connection.WriteLine(ex.ToString());
+              return;
+            }
 
-					for (Int32 i = 0; i < lListingArgs.Listing.Count; i++)
-					{
-						FtpListingItem lItem = lListingArgs.Listing[i];
-						lSession.ActiveConnection.WriteLine(lItem.ToString());
-					}
+            for (Int32 i = 0; i < lListingArgs.Listing.Count; i++)
+            {
+              FtpListingItem lItem = lListingArgs.Listing[i];
+              lSession.ActiveConnection.WriteLine(lItem.ToString());
+            }
 
-					lSession.ActiveConnection.Close();
-					lSession.ActiveConnection = null;
+            lSession.ActiveConnection.Close();
+            lSession.ActiveConnection = null;
 
-					try
-					{
-						e.Connection.WriteLine("226 Transfer complete.");
-					}
-					catch
-					{
-						e.Connection.WriteLine("425 Error while transfering");
-					}
+            try
+            {
+              e.Connection.WriteLine("226 Transfer complete.");
+            }
+            catch
+            {
+              e.Connection.WriteLine("425 Error while transfering");
+            }
+          }
+				  else
+				  {
+            e.Connection.WriteLine("501 Syntax error in parameters or arguments.");
+          }
 				}
 
 				lSession.RestartPoint = 0;
